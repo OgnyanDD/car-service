@@ -1,0 +1,98 @@
+<div class="shadow">Welcome to Car Service!</div>
+
+<div class="table-window-h">
+    <h3 class="legend-black">Our services:</h3>
+    <input id="role" type="hidden" value="1" sec:authorize="hasRole('ROLE_ADMIN')"/>
+    <a title="Add new service" sec:authorize="hasRole('ROLE_ADMIN')" class="custom-color-btn"
+       th:href="@{/car-service/admin/services/new-service}">+</a>
+    <table id="servicesTable" class="table-container table table-dark table-hover">
+        <thead>
+        <tr>
+            <th>No</th>
+            <th>Service category</th>
+            <th>Service</th>
+            <th>Price [lv.]</th>
+            <th>Status</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th>No</th>
+            <th>Service category</th>
+            <th>Service</th>
+            <th>Price [lv.]</th>
+            <th>Status</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        var table = $('#servicesTable').DataTable({
+            searching: true,
+            ordering: true,
+            "aaSorting": [1,'asc'],
+            "bLengthChange": false,
+            "language": {
+                "loadingRecords": "No data available for any services!"
+            },
+            lengthMenu: [5, 10, 25, 50, 75, 100],
+            "columnDefs": [
+                {"className": "dt-center", "targets": "_all"},
+                {"targets": [0, 4], "visible": false, "searchable": false},
+                {
+                    "visible": !!document.getElementById('role'),
+                    "targets": [5, 6]
+                }
+            ],
+            "ajax": {
+                "url": "http://localhost:8080/api/auto-services/admin",
+                error: function () {
+                }
+            },
+            "autoWidth": false,
+            "columns": [
+                {"data": "id", width: '10px'},
+                {"data": "category", width: '300px'},
+                {"data": "service", width: '400px'},
+                {"data": "price", width: '100px'},
+                {"data": "isDeleted", width: '100px'},
+                {"data": null, "defaultContent": "<button class='edit'><i class=\"fa fa-edit\"></i></button>"},
+                {"data": null, "defaultContent": "<button class='delete'><i class=\"fa fa-trash\"></i></i></button>"}
+            ]
+        });
+        table.on('click', 'button.edit', function () {
+            var currentRow = $(this).closest("tr");
+            var serviceId = $('#servicesTable').DataTable().row(currentRow).data()['id'];
+
+            window.location = '/car-service/admin/services/' + serviceId + '/edit';
+        });
+
+        table.on('click', 'button.delete', function () {
+
+            var currentRow = $(this).closest("tr");
+            var serviceId = $('#servicesTable').DataTable().row(currentRow).data()['id'];
+            var service = $('#servicesTable').DataTable().row(currentRow).data()['service'];
+            if ((confirm('This will delete service "' + service + '" . Are you sure?'))) {
+                $.ajax({
+                    type: "DELETE",
+                    url: "http://localhost:8080/api/auto-services/admin/" + serviceId,
+                    datatype: 'json',
+                    async: false,
+                    success: function () {
+                        window.location.reload();
+                    }
+                });
+            }
+            return false;
+        });
+        // var UPDATE_INTERVAL = 3000;
+        // setInterval( function () {
+        //     $('#servicesTable').DataTable().ajax.reload(null, false);
+        // }, UPDATE_INTERVAL);
+    });
+</script>

@@ -1,0 +1,65 @@
+<div class="win-container">
+    <form class="form-win" th:action="@{'/car-service/customer/' + ${customer.id} + '/edit'}" th:method="post" enctype="multipart/form-data">
+        <fieldset>
+            <legend class="legend">EDIT PROFILE</legend>
+
+            <div class="image" onclick="openFileExplorer()">
+                <img title="Click to change picture" id="customer_picture" style="color: rgb(117, 117, 117)"
+                     th:src="${customer.picture} == null ? @{'/images/user_default.png'} : @{'/images/profiles/' + ${customer.id} + '/' + ${customer.picture}}"/>
+
+                <input style="display: none" type="file" id="load_picture" name="picture"/>
+            </div>
+
+            <input th:value="${customer.id}" name="id" type="hidden">
+
+            <label for="win-input-name" class="win__label"></label>
+            <input id="win-input-name" class="win__input" type="text" name="name" th:value="${customer.name}"
+                   placeholder="Name" maxlength="60" required="required"/>
+
+            <label for="win-input-phone" class="win__label"></label>
+            <input id="win-input-phone" class="win__input" type="text" name="phoneNumber"
+                   th:value="${customer.phoneNumber}" placeholder="Phone number" maxlength="30" required="required"/>
+
+            <label for="win-input-email" class="win__label"></label>
+            <input class="win__input" name="email_disabled" th:value="${customer.email}" disabled="disabled"/>
+
+            <input id="win-input-email" class="win__input" name="username" th:value="${customer.email}" type="hidden"/>
+
+            <div class="inline-buttons" sec:authorize="hasRole('ROLE_ADMIN')">
+                <div class="move">
+                    <button class="win__submit_edit" type="submit">Edit profile
+                    </button>
+                    <a class="win__submit" th:href="@{'/car-service/admin/customer/' + ${customer.id} + '/password'}">
+                        Change password</a>
+                    <a class="win__cancel" th:href="@{/car-service/admin/customer/{id}(id = ${customer.id})}">Cancel</a>
+                </div>
+            </div>
+
+            <div class="inline-buttons" sec:authorize="hasRole('ROLE_USER')">
+                <div class="move">
+                    <button class="win__submit_edit" type="submit">Edit profile
+                    </button>
+                    <a class="win__submit" th:href="@{'/car-service/customer/' + ${customer.id} + '/password'}">
+                        Change password</a>
+                    <a class="win__cancel" th:href="@{/car-service/customer/{id}(id = ${customer.id})}">Cancel</a>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<script>
+    function openFileExplorer() {
+        document.getElementById('load_picture').click();
+    }
+    var reader = new FileReader();
+    var fileInput = document.getElementById("load_picture");
+    var img = document.getElementById("customer_picture");
+    reader.onload = function (e) {
+        img.src = e.target.result;
+    };
+    fileInput.addEventListener('change', function (e) {
+        var f = e.target.files[0];
+        reader.readAsDataURL(f);
+    });
+</script>

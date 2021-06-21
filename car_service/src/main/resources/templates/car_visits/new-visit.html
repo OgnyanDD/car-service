@@ -1,0 +1,42 @@
+<div class="win-container" xmlns:th="http://www.w3.org/1999/xhtml">
+
+    <form class="form-horizontal"
+          th:action="@{'/car-service/admin/customer/' + ${customer.id} + '/car/' + ${car.carId} + '/new-visit'}"
+          method="post">
+
+        <fieldset class="form-win">
+            <legend class="legend">NEW VISIT</legend>
+
+
+            <label class="win__label"></label>
+
+            <div class="win__input" type="text">
+                <p>Customer: <span th:text="${customer.name}"></span></p>
+                <p>Customer car: <span th:text="${car.maker +' '+ car.model}"></span></p>
+                <p>Registration number: <span th:text="${car.registration}"></span></p>
+                <br>
+
+                <div class="col-sm-4">
+                    <input type="hidden" name="carId" id="carId" th:value="${car.carId}">
+                </div>
+
+                <div>
+                    <select class="my-custom-scrollbar-new-visit" name="indices" id="style-1" multiple="multiple">
+                        <option
+                                th:each="service :${services}"
+                                th:value="${service.id}"
+                                th:text="${service.service+'  '+'Category:'+' '+ service.category}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="move">
+                <button class="win__submit" type="submit">Submit</button>
+
+                <a class="win__cancel" th:href="@{'/car-service/admin/customer/'
+            + ${customer.id} + '/car/' + ${car.carId} + '/visits'}">Cancel</a>
+            </div>
+        </fieldset>
+    </form>
+</div>

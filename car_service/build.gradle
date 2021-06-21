@@ -1,0 +1,42 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.4.RELEASE'
+    id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.telerikacademy'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //JPA & DB
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'mysql:mysql-connector-java'
+
+    //Security
+    compile 'org.springframework.boot:spring-boot-starter-security'
+    compile 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
+    //Email
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.1.4.RELEASE'
+    
+    //Password
+    compile group: 'org.passay', name: 'passay', version: '1.4.0'
+    
+    //Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    //Thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    //Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    //PDF
+    compile group: 'com.itextpdf', name: 'itextpdf', version: '5.0.6'
+}

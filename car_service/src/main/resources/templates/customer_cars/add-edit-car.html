@@ -1,0 +1,179 @@
+<div class="win-register">
+    <form class="form-win"
+          th:action="${method} !=null ? @{'/car-service/admin/customer/edit-car'} : @{'/car-service/admin/customer/new-car'}"
+          th:method="post">
+        <fieldset>
+            <legend class="legend text-uppercase"
+                    th:text="${method} !=null ? @{${method} + ' car'} : @{'NEW CAR'}"></legend>
+
+            <input class="win__input" type="hidden" th:value="${customer.id}" name="customerId" id="customer-id"/>
+            <input class="win__input" type="hidden"
+                   th:value="${customerCar} !=null ? @{${customerCar.id}} : @{''}" name="carId"/>
+
+            <label class="win__label"></label>
+            <input class="win__input txt-uppercase" type="text"
+                   th:value="${customerCar} !=null ? @{${customerCar.registration}} : @{''}"
+                   placeholder="Registration"
+                   name="registration" maxlength="10" required="required"/>
+
+            <label class="win__label"></label>
+            <input class="win__input txt-uppercase" type="text"
+                   th:value="${customerCar} !=null ? @{${customerCar.car_vin}} : @{''}" placeholder="VIN"
+                   name="carVinNumber" maxlength="17" required="required"/>
+
+            <input class="win__input" type="hidden" name="year" id="selected-year"/>
+
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle custom-dropdown" type="button" id="car-makers"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false"
+                        th:attrappend="data-selected-car-maker-id=${selectedCarMakerId != null}?@{${selectedCarMakerId}}">
+                    Car maker
+                </button>
+                <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton"
+                     id="car-makers-dropdown">
+                    <button th:each="maker : ${makers}" class="dropdown-item" type="button"
+                            th:text="${maker.make}" th:attr="data-car-maker-id=${maker.id}"></button>
+                </div>
+            </div>
+
+            <div class="dropdown" id="car-models-dropdown-wrapper" style="display: none">
+                <button class="btn btn-secondary dropdown-toggle custom-dropdown " type="button" id="car-models"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false"
+                        th:attrappend="data-selected-car-model-id=${selectedCarModelId != null}?@{${selectedCarModelId}}">
+                    Car models
+                </button>
+                <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton"
+                     id="car-models-dropdown">
+
+                </div>
+            </div>
+
+            <div class="dropdown" id="model-years-dropdown-wrapper" style="display: none">
+                <button class="btn btn-secondary dropdown-toggle custom-dropdown" type="button" id="model-years"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false"
+                        th:attrappend="data-selected-model-year-id=${selectedModelYearId != null}?@{${selectedModelYearId}}">
+                    Model Years
+                </button>
+                <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton"
+                     id="model-years-dropdown">
+                </div>
+            </div>
+        </fieldset>
+        <div class="move">
+            <button class="win__submit" type="submit">Submit</button>
+            <a class="win__cancel" th:href="@{'/car-service/admin/customer/' + ${customer.id}+ '/cars'}">Cancel</a>
+        </div>
+    </form>
+</div>
+<script>
+    function getModelYearsData(carModel) {
+        $.get('/api/cars/admin/model-years/' + carModel.id, function (yearsData) {
+            $('#model-years').text('Model Years');
+            var modelYearsDropdown = $('#model-years-dropdown');
+            modelYearsDropdown.html('');
+            yearsData.forEach(function (yearData) {
+                var yearButton = $('<button class="dropdown-item" ' +
+                    'type="button" data-model-year-id="' + yearData.id + '">' + yearData.year + '</button>');
+                yearButton.click(function () {
+                    $('#selected-year').val(yearData.id);
+                    $('#model-years').text(yearData.year);
+                    $('#model-years-dropdown>button.active').toggleClass('active');
+                    yearButton.addClass('active');
+                });
+                modelYearsDropdown.append(yearButton);
+            });
+
+            $('#model-years-dropdown-wrapper').show();
+        });
+    }
+
+    function getCarModelDropDownData(selectedCarMakerId) {
+        $.get('/api/cars/admin/maker-models/' + selectedCarMakerId, function (data) {
+            $('#car-models').text('Car Models');
+            var modelsDropdown = $('#car-models-dropdown');
+            modelsDropdown.html('');
+            data.forEach(function (carModel) {
+                var button = $('<button class="dropdown-item" ' +
+                    'type="button" data-car-model-id="' + carModel.id + '">' + carModel.model + '</button>');
+                button.click(function () {
+                    $('#car-models').text(carModel.model);
+                    $('#selected-year').val('');
+                    $('#car-models-dropdown>button.active').toggleClass('active');
+                    button.addClass('active');
+                    getModelYearsData(carModel);
+                });
+                modelsDropdown.append(button);
+            });
+            $('#car-models-dropdown-wrapper').show();
+        });
+    }
+
+    $(document).ready(function () {
+        $('#car-makers-dropdown').on('click', 'button.dropdown-item', function () {
+            $('#model-years').text('Model Years');
+            $('#selected-year').val('');
+            $('#car-makers-dropdown>button.active').toggleClass('active');
+            var selectedCarMaker = $(this);
+            selectedCarMaker.addClass('active');
+            var selectedCarMakerId = selectedCarMaker.data('car-maker-id');
+            getCarModelDropDownData(selectedCarMakerId);
+            if (selectedCarMaker && selectedCarMaker.text()) {
+                $('#car-makers').text(selectedCarMaker.text());
+            } else {
+                $('#car-makers').text('Car Makers');
+            }
+        });
+        var selectedCarMakerId = $('#car-makers').data('selected-car-maker-id');
+
+        if (selectedCarMakerId) {
+            var selectedCarMakerButton = $("button[data-car-maker-id='" + selectedCarMakerId + "']");
+            selectedCarMakerButton.addClass('active');
+            selectedCarMakerButton.trigger('click');
+
+            handleInitialModelSelection();
+            handleInitialYearSelection();
+        }
+    });
+
+    function handleInitialModelSelection() {
+        var modelsInterval = setInterval(modelsTimer, 100);
+
+        function modelsTimer() {
+            if ($('#car-models-dropdown').html().trim().length < 1) {
+                return;
+            }
+            var selectedCarModelId = $('#car-models').data('selected-car-model-id');
+            var selectedCarModelButton = $("button[data-car-model-id='" + selectedCarModelId + "']");
+            selectedCarModelButton.addClass('active');
+            selectedCarModelButton.trigger('click');
+
+            modelsIntervalStopFunction();
+        }
+
+        function modelsIntervalStopFunction() {
+            clearInterval(modelsInterval);
+        }
+    }
+
+    function handleInitialYearSelection() {
+        var yearsInterval = setInterval(yearsTimer, 100);
+
+        function yearsTimer() {
+            if ($('#model-years-dropdown').html().trim().length < 1) {
+                return;
+            }
+            var selectedModelYearId = $('#model-years').data('selected-model-year-id');
+            var selectedModelYearButton = $("button[data-model-year-id='" + selectedModelYearId + "']");
+            selectedModelYearButton.addClass('active');
+            selectedModelYearButton.trigger('click');
+            yearsIntervalStopFunction();
+        }
+
+        function yearsIntervalStopFunction() {
+            clearInterval(yearsInterval);
+        }
+    }
+</script>

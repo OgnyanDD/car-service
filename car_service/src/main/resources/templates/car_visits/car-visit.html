@@ -1,0 +1,41 @@
+<div class="win-container" xmlns:th="http://www.w3.org/1999/xhtml">
+    <fieldset class="form-win">
+        <legend class="legend">CAR VISIT</legend>
+
+        <input id="car" type="hidden" th:value="${car.id}"/>
+        <input id="customer" type="hidden" th:value="${customer.id}"/>
+
+        <div class="win__input" type="text">
+            <p>Visit number: <span th:text="${visit.id}"></span></p>
+            <p>Date: <span th:text="${visit.date}"></span></p>
+            <p>Customer: <span th:text="${visit.customer}"></span></p>
+            <p>Customer car: <span th:text="${visit.CustomerCar}"></span></p>
+            <p>Registration number: <span th:text="${visit.CarPlateNumber}"></span></p>
+
+            <div class="table-wrapper-scroll-y my-custom-scrollbar" id="style-1">
+            <table class="table table-bordered table-striped mb-0 table-txt">
+                <tr th:each="service : ${services}">
+                    <td th:text="${service}"/></td>
+                </tr>
+            </table>
+            </div>
+            <br>
+            <p>Total Price: <span class="txt-bold" th:text="${visit.price} + ' lv.'"></span></p>
+
+            <div class="btn-group" sec:authorize="hasRole('ROLE_ADMIN')">
+                <a class="button-profile"
+                   th:href="@{'/car-service/admin/car-visit/pdf/' + ${visit.id}}">Export to PDF</a>
+            </div>
+            <div class="btn-group" sec:authorize="hasRole('ROLE_USER')">
+                <a class="button-profile"
+                   th:href="@{'/car-service/car-visit/pdf/' + ${visit.id}}">Export to PDF</a>
+            </div>
+        </div>
+
+        <a sec:authorize="hasRole('ROLE_ADMIN')" class="win__cancel" th:href="@{'/car-service/admin/customer/'
+        + ${customer.id} + '/car/' + ${car.id} + '/visits'}">Cancel</a>
+
+            <a sec:authorize="hasRole('ROLE_USER')" class="win__cancel" th:href="@{'/car-service/customer/'
+            + ${customer.id} + '/car/' + ${car.id} + '/visits'}">Cancel</a>
+    </fieldset>
+</div>

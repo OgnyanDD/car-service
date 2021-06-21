@@ -1,0 +1,131 @@
+<div class="table-window-h">
+    <h3 class="legend-black">Customer cars:</h3>
+    <input id="role" type="hidden" value="1" sec:authorize="hasRole('ROLE_ADMIN')"/>
+    <input id="customer" type="hidden" th:value="${customer.id}"/>
+    <a title="Add new car" sec:authorize="hasRole('ROLE_ADMIN')" class="custom-color-btn"
+       th:href="@{'/car-service/admin/customer/'+ ${customer.id} + '/new-car'}">+</a>
+    <table id="customerCarsTable" class="table-container table table-dark table-hover">
+        <thead>
+        <tr>
+            <th>No</th>
+            <th>Maker</th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Registration</th>
+            <th>VIN</th>
+            <th>Status</th>
+            <th>Visits</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th>No</th>
+            <th>Maker</th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Registration</th>
+            <th>VIN</th>
+            <th>Status</th>
+            <th>Visits</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </tfoot>
+    </table>
+    <a class="win__cancel_list" sec:authorize="hasRole('ROLE_ADMIN')"
+       th:href="@{/car-service/admin/customers}">Cancel</a>
+    <a class="win__cancel_list" sec:authorize="hasRole('ROLE_USER')" th:href="@{/car-service/home}">Cancel</a>
+</div>
+<script>
+    $(document).ready(function () {
+        var customerId = $('#customer').val();
+        var url = 'http://localhost:8080/api/customer-cars/customer/' + customerId + '/cars';
+        var table = $('#customerCarsTable').DataTable({
+            searching: true,
+            ordering: true,
+            "deferLoading": 0,
+            "bLengthChange": false,
+            "language": {
+                "loadingRecords": "No data available for any cars!"
+            },
+            lengthMenu: [5, 10, 25, 50, 75, 100],
+            "columnDefs": [
+                {"className": "dt-center", "targets": "_all"},
+                {"targets": [0, 6], "visible": false, "searchable": false},
+                {
+                    "visible": !!document.getElementById('role'),
+                    "targets": [8, 9]
+                }
+            ],
+            "ajax": {
+                "url": url,
+                error: function () {
+                }
+            },
+            "autoWidth": false,
+            "columns": [
+                {"data": "carId", width: '10px'},
+                {"data": "maker", width: '200px'},
+                {"data": "model", width: '200px'},
+                {"data": "year", width: '150px'},
+                {"data": "registration", width: '200px'},
+                {"data": "carVin", width: '300px'},
+                {"data": "deleted", width: '150px'},
+                {"data": null, "defaultContent": "<button class='service'><i class=\"fa fa-wrench\"></i></button>"},
+                {"data": null, "defaultContent": "<button class='edit'><i class=\"fa fa-edit\"></i></button>"},
+                {"data": null, "defaultContent": "<button class='delete'><i class=\"fa fa-trash\"></button>"}
+            ],
+            "dataSrc": function(data){
+
+                if(data === "no data"){
+                    return [];
+                }
+                else {
+                    return data.data;
+                }
+            }
+        });
+       table.on('click', 'button.service', function () {
+
+            if (document.getElementById('role')) {
+                window.location = '/car-service/admin/customer/' + customerId + '/car/' + getCarId(this) + '/visits';
+                return;
+            }
+            window.location = '/car-service/customer/' + customerId + '/car/' + getCarId(this) + '/visits';
+        });
+
+        function getCarId(_this) {
+            var currentRow = $(_this).closest("tr");
+            return $('#customerCarsTable').DataTable().row(currentRow).data()['carId'];
+        }
+
+       table.on('click', 'button.edit', function () {
+
+            window.location = '/car-service/admin/customer/' + customerId + '/car/' + getCarId(this) + '/edit';
+        });
+
+       table.on('click', 'button.delete', function () {
+
+            var rowCurrent = $(this).closest("tr");
+            var registration = $('#customerCarsTable').DataTable().row(rowCurrent).data()['registration'];
+            if ((confirm('This will delete car with registration number "' + registration + '" . Are you sure?'))) {
+                $.ajax({
+                    type: "DELETE",
+                    url: "http://localhost:8080/api/customer-cars/admin/" + getCarId(this),
+                    datatype: 'json',
+                    async: false,
+                    success: function () {
+                        window.location.reload();
+                    }
+                });
+            }
+            return false;
+        });
+        // var UPDATE_INTERVAL = 3000;
+        // setInterval( function () {
+        //     $('#customerCarsTable').DataTable().ajax.reload(null, false);
+        // }, UPDATE_INTERVAL);
+    });
+</script>

@@ -1,0 +1,81 @@
+<div class="table-window-h">
+    <h3 class="legend-black">Customers:</h3>
+    <a title="Add new customer" class="custom-color-btn" th:href="@{/car-service/admin/register}">+</a>
+    <table id="customersTable" class="table-container table table-dark table-hover">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Profile</th>
+            <th>Cars</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Profile</th>
+            <th>Cars</th>
+        </tr>
+        </tfoot>
+    </table>
+    <a class="win__cancel_list" th:href="@{/car-service/home}">Cancel</a>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#customersTable').DataTable({
+            searching: true,
+            ordering: true,
+            "bLengthChange": false,
+            "language": {
+                "loadingRecords": "No data available for any customers!"
+            },
+            lengthMenu: [5, 10, 25, 50, 75, 100],
+            "columnDefs": [
+                {"className": "dt-center", "targets": "_all"},
+                {"targets": [4], "visible": false, "searchable": false}
+            ],
+            "ajax": {
+                "url": "http://localhost:8080/api/car-service/admin/customers",
+                error: function () {
+                }
+            },
+            "autoWidth": false,
+            "columns": [
+                {"data": "id", width: '10px'},
+                {"data": "name", width: '150px'},
+                {"data": "email", width: '170px'},
+                {"data": "phone", width: '150px'},
+                {"data": "isDeleted", width: '100px'},
+                {
+                    "data": null, "defaultContent": "<button class='profile'>" +
+                        "<i class=\"fa fa-user-circle-o\"></i></button>", width: '100px'
+                },
+                {
+                    "data": null, "defaultContent": "<button class='cars'>" +
+                        "<i class=\"fa fa-car\"></i></button>", width: '100px'
+                }
+            ]
+        });
+
+        $('#customersTable tbody').on('click', 'button.profile', function () {
+            var currentRow = $(this).closest("tr");
+            var customerId = $('#customersTable').DataTable().row(currentRow).data()['id'];
+
+            window.location = '/car-service/admin/customer/' + customerId;
+        });
+
+        $('#customersTable tbody').on('click', 'button.cars', function () {
+            var currentRow = $(this).closest("tr");
+            var customerId = $('#customersTable').DataTable().row(currentRow).data()['id'];
+
+            window.location = '/car-service/admin/customer/' + customerId + '/cars';
+        });
+    });
+</script>

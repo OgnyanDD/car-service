@@ -1,0 +1,30 @@
+<div class="win-container" xmlns:th="http://www.w3.org/1999/xhtml">
+
+    <form class="form-horizontal" th:action="@{/car-service/admin/services/new-service}" method="post">
+
+        <fieldset class="form-win">
+            <legend class="legend">ADD NEW SERVICE</legend>
+
+            <label class="win__label"></label>
+            <select class="win__input dropdown-text-legend" name="category" id="category">
+                <option class="dropdown-background" value="" disabled selected>Select service category</option>
+                <option class="dropdown-background" th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.category}"></option>
+            </select>
+
+            <label class="win__label"></label>
+            <textarea class="win__input text-box" name="service" rows="4" cols="50"
+                      required="required" placeholder="Description"></textarea>
+
+            <label class="win__label"></label>
+            <input class="win__input" type="number" step="0.01" min="0"
+                   name="price" required="required" placeholder="Price in lv."/>
+
+            <div class="move">
+                <button class="win__submit" type="submit">Submit</button>
+                <a class="win__cancel" th:href="@{/car-service/home}">Cancel</a>
+            </div>
+        </fieldset>
+    </form>
+</div>

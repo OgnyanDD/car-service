@@ -1,0 +1,53 @@
+<div class="fixed-nav-bar">
+    <a sec:authorize="isAuthenticated()" th:href="@{/car-service/home}" class="logo"><span>CAR </span>SERVICE</a>
+    <a sec:authorize="isAnonymous()" th:href="@{/car-service/index}" class="logo"><span>CAR </span>SERVICE</a>
+    <input type="checkbox" id="menuButton"/>
+    <label for="menuButton" class="menu-button-label">
+        <div class="white-bar"></div>
+        <div class="white-bar"></div>
+        <div class="white-bar"></div>
+        <div class="white-bar"></div>
+    </label>
+</div>
+
+<div class="the-bass">
+    <div class="rela-block drop-down-container">
+        <p class="txt-bold">Welcome, <span sec:authentication="name"></span></p>
+    </div>
+    <div sec:authorize="hasRole('ROLE_USER')" class="rela-block drop-down-container"
+         onClick="window.location ='/car-service/customer/profile';">
+        <div class="drop-down-item">
+            <p class="txt-bold">PROFILE</p>
+        </div>
+    </div>
+    <div sec:authorize="hasRole('ROLE_USER')" class="rela-block drop-down-container"
+         onClick="window.location ='/car-service/customer/cars';">
+        <div class="drop-down-item">
+            <p class="txt-bold">CARS</p>
+        </div>
+    </div>
+    <div sec:authorize="hasRole('ROLE_ADMIN')" class="rela-block drop-down-container"
+         onClick="window.location ='/car-service/admin/customers';">
+        <div class="drop-down-item">
+            <p class="txt-bold">CUSTOMERS</p>
+        </div>
+    </div>
+    <div sec:authorize="isAnonymous()" class="rela-block drop-down-container"
+         onClick="window.location ='/car-service/login';">
+        <div class="drop-down-item">
+            <p class="txt-bold">LOGIN</p>
+        </div>
+    </div>
+    <div sec:authorize="isAuthenticated()" class="rela-block drop-down-container"
+         onClick="window.location ='/logout';">
+        <div class="drop-down-item">
+            <p class="txt-bold">LOGOUT</p>
+        </div>
+    </div>
+    <div sec:authorize="isAnonymous()" class="rela-block drop-down-container"
+         onClick="window.location ='/car-service/team-7';">
+        <div class="drop-down-item">
+            <p class="txt-bold">TEAM 7</p>
+        </div>
+    </div>
+</div>

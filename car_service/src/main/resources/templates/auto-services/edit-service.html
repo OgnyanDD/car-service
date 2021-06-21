@@ -1,0 +1,34 @@
+<div class="win-container" xmlns:th="http://www.w3.org/1999/xhtml">
+
+    <form class="form-horizontal" th:action="@{/car-service/admin/services/edit}"
+          th:object="${categories}" method="post">
+
+        <fieldset class="form-win">
+            <legend class="legend">EDIT SERVICE</legend>
+
+            <input type="hidden" name="id" th:value="${service.id}">
+
+            <label class="win__label"></label>
+            <select class="win__input dropdown-text-legend" name="category" id="category">
+                <option class="dropdown-background" value="" disabled selected>Select service category</option>
+                <option class="dropdown-background" th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.category}"
+                        th:selected="${category.category==service.category}"></option>
+            </select>
+
+            <label class="win__label"></label>
+            <textarea class="win__input text-box" name="service" rows="4" cols="50"
+                      th:field="${service.service}" placeholder="Description"></textarea>
+
+            <label class="win__label"></label>
+            <input class="win__input" type="number" step="0.01" min="0"
+                   name="price" th:field="${service.price}" placeholder="Price in lv."/>
+
+            <div class="move">
+                <button class="win__submit" type="submit">Submit</button>
+                <a class="win__cancel" th:href="@{/car-service/home}">Cancel</a>
+            </div>
+        </fieldset>
+    </form>
+</div>

@@ -1,0 +1,25 @@
+<div class="win-container">
+    <form class="form-win" th:action="@{/car-service/login}" th:method="post">
+        <fieldset>
+            <legend class="legend">LOGIN</legend>
+
+            <label for="login-input-user" class="win__label"></label>
+            <input id="login-input-user" class="win__input" type="email" placeholder="Email" name="username"
+                   maxlength="255" required="required"/>
+
+            <label for="login-input-password" class="win__label"></label>
+            <input id="login-input-password" class="win__input" type="password" placeholder="Password"
+                   name="password" maxlength="128" required="required"/>
+
+            <div class="error-message">
+                <i th:if="${param.error}" class="error custom-error">Wrong username or password!</i>
+            </div>
+
+            <div class="move">
+                <button class="win__submit" type="submit">Sign in</button>
+                <a class="win__cancel" th:href="@{/car-service/index}">Cancel</a>
+            </div>
+        </fieldset>
+    </form>
+    <a th:href="@{/car-service/reset-password}" class="win__forgot">Forgot Password?</a>
+</div>

@@ -1,0 +1,84 @@
+<div class="table-window-h">
+    <h3 class="legend-black">Customer car visits:</h3>
+    <input id="car" type="hidden" th:value="${car.id}"/>
+    <input id="customer" type="hidden" th:value="${customer.id}"/>
+    <input id="role" type="hidden" value="1" sec:authorize="hasRole('ROLE_ADMIN')"/>
+    <a title="Add new visit" sec:authorize="hasRole('ROLE_ADMIN')" class="custom-color-btn"
+       th:href="@{'/car-service/admin/customer/' + ${customer.id} + '/car/'+ ${car.id} + '/new-visit'}">+</a>
+    <table id="customerCarVisitsTable" class="table-container table table-dark table-hover">
+        <thead>
+        <tr>
+            <th>No</th>
+            <th>Date</th>
+            <th>Car registration</th>
+            <th>Total price [lv.]</th>
+            <th>Generated invoice</th>
+            <th>Visit</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th>No</th>
+            <th>Date</th>
+            <th>Car registration</th>
+            <th>Total price [lv.]</th>
+            <th>Generated invoice</th>
+            <th>Visit</th>
+        </tr>
+        </tfoot>
+    </table>
+    <a sec:authorize="hasRole('ROLE_ADMIN')" class="win__cancel_list"
+       th:href="@{'/car-service/admin/customer/' + ${customer.id} + '/cars'}">Cancel</a>
+
+    <a sec:authorize="hasRole('ROLE_USER')" class="win__cancel_list"
+       th:href="@{'/car-service/customer/' + ${customer.id} + '/cars'}">Cancel</a>
+</div>
+<script>
+    $(document).ready(function () {
+        var carId = $('#car').val();
+        var customerId = $('#customer').val();
+        var url = 'http://localhost:8080/api/cars-visits/customer-visits/' + carId;
+        var table = $('#customerCarVisitsTable').DataTable({
+            searching: true,
+            ordering: true,
+            "language": {
+                "loadingRecords": "No data available for any visits!"
+            },
+            "bLengthChange": false,
+            lengthMenu: [5, 10, 25, 50, 75, 100],
+            "columnDefs": [
+                {"className": "dt-center", "targets": "_all"}],
+            "fnRowCallback": function (row, data) {
+                if (data['pdfGenerated'] === false) {
+                    $('td:eq(4)', row).html('<b>no</b>');
+                } else {
+                    $('td:eq(4)', row).html('<b>yes</b>');
+                }
+            },
+            "ajax": {
+                "url": url,
+                error: function () {
+                }
+            },
+            "autoWidth": false,
+            "columns": [
+                {"data": "id", width: '20px'},
+                {"data": "date", width: '50px'},
+                {"data": "carRegistration", width: '200px'},
+                {"data": "price", width: '100px'},
+                {"data": "pdfGenerated", width: '200px'},
+                {"data": null, "defaultContent": "<button><i class=\"fa fa-eye\"></i></button>", width: '100px'}
+            ]
+        });
+        table.on('click', 'button', function () {
+            var currentRow = $(this).closest("tr");
+            var visitId = $('#customerCarVisitsTable').DataTable().row(currentRow).data()['id'];
+
+            if (document.getElementById('role')) {
+                window.location = '/car-service/admin/customer/' + customerId + '/car/' + carId + '/visits/' + visitId;
+                return;
+            }
+            window.location = '/car-service/customer/' + customerId + '/car/' + carId + '/visits/' + visitId;
+        });
+    });
+</script>

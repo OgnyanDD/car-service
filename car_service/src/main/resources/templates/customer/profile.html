@@ -1,0 +1,38 @@
+<div class="win-container">
+    <fieldset class="form-win">
+        <legend class="legend">PROFILE</legend>
+
+        <span th:text="${customer.id}" type="hidden"></span>
+
+        <div class="image">
+            <img id="customer_picture"
+                 th:src="${customer.picture} == null ? @{'/images/user_default.png'} : @{'/images/profiles/' + ${customer.id} + '/' + ${customer.picture}}"/>
+        </div>
+
+        <label class="win__label"></label>
+        <div class="win__input" type="text">
+            <p>Name: <span th:text="${customer.name}"></span></p>
+            <p>Email: <span th:text="${customer.email}"></span></p>
+            <p>Phone: <span th:text="${customer.phoneNumber}"></span></p>
+
+            <div class="btn-group" sec:authorize="hasRole('ROLE_ADMIN')">
+                <form th:action="@{'/car-service/admin/customer/' + ${customer.id} + '/delete'}" th:method="post">
+                    <button sec:authorize="hasRole('ROLE_ADMIN')" class="button-profile" type="submit"
+                            onclick="return confirm('Are you sure want to delete this customer?');">Delete
+                    </button>
+                </form>
+                <a class="button-profile"
+                   th:href="@{'/car-service/admin/customer/' + ${customer.id} +  '/edit'}">Edit</a>
+                <a class="button-profile"
+                   th:href="@{'/car-service/admin/customer/'+ ${customer.id} + '/cars'}">Cars</a>
+            </div>
+
+            <div class="btn-group" sec:authorize="hasRole('ROLE_USER')">
+                <a class="button-profile" th:href="@{'/car-service/customer/' + ${customer.id} +  '/edit'}">Edit</a>
+            </div>
+        </div>
+
+        <a class="win__cancel" sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/car-service/admin/customers}">Cancel</a>
+        <a class="win__cancel" sec:authorize="hasRole('ROLE_USER')" th:href="@{/car-service/home}">Cancel</a>
+    </fieldset>
+</div>

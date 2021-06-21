@@ -1,0 +1,26 @@
+<div class="win-container">
+    <form class="form-win" th:action="@{/car-service/register}" th:method="post" enctype="multipart/form-data">
+        <fieldset>
+            <legend class="legend">REGISTER</legend>
+
+            <input class="win__input" type="file" placeholder="Picture" name="picture"/>
+
+            <label for="win-input-name" class="win__label"></label>
+            <input id="win-input-name" class="win__input" type="text" placeholder="Name" name="name"
+                   maxlength="60" required="required"/>
+
+            <label for="win-input-phone" class="win__label"></label>
+            <input id="win-input-phone" class="win__input" type="text" placeholder="Phone number" name="phoneNumber"
+                   maxlength="30" required="required"/>
+
+            <label for="win-input-email" class="win__label"></label>
+            <input id="win-input-email" class="win__input" type="email" placeholder="Email" name="username"
+                   maxlength="255" required="required"/>
+            <div class="move">
+                <button class="win__submit" type="submit">Submit</button>
+                <a sec:authorize="hasRole('ROLE_ADMIN')" class="win__cancel" th:href="@{/car-service/admin/customers}">Cancel</a>
+                <a sec:authorize="isAnonymous()" class="win__cancel" th:href="@{/car-service/index}">Cancel</a>
+            </div>
+        </fieldset>
+    </form>
+</div>
